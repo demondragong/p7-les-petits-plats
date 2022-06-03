@@ -1,0 +1,22 @@
+{
+  "name": "p7-les-petits-plats",
+  "version": "1.0.0",
+  "description": "Projet de formation",
+  "main": "index.js",
+  "scripts": {
+    "sass": "node-sass static/sass/main.scss static/css/style.css -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/demondragong/p7-les-petits-plats.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/demondragong/p7-les-petits-plats/issues"
+  },
+  "homepage": "https://github.com/demondragong/p7-les-petits-plats#readme",
+  "dependencies": {
+    "node-sass": "^7.0.1"
+  }
+}

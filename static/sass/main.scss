@@ -1,0 +1,128 @@
+// || utils
+
+$colour-logo: #D04F4F;
+$colour-filter-blue: #3282F7;
+$colour-filter-green: #68D9A4;
+$colour-filter-red: #ED6454;
+$colour-bg-grey-light: #E7E7E7;
+$colour-bg-grey-dark: #C7BEBE;
+
+$logo-font-fam: 'DM Sans', sans-serif;
+$body-font-fam: 'Lato', sans-serif;
+$description-font-fam: 'Roboto', sans-serif;
+
+$normal: 400;
+$bold: 700;
+
+@mixin for-phone-only {
+    @media (max-width: 599px) { @content; }
+}
+@mixin for-tablet-portrait-up {
+    @media (min-width: 600px) { @content; }
+}
+@mixin for-desktop-up {
+    @media (min-width: 1200px) { @content; }
+}
+
+// generic styles
+
+// base.html style
+
+body {
+    box-sizing: border-box;
+    font-family: $body-font-fam;
+    margin: auto;
+    max-width: 1400px;
+}
+*, *::before, *::after {
+    box-sizing: inherit;
+}
+header {
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.logo {
+    color: $colour-logo;
+    margin: 0;
+    text-align: center;
+    font: $bold 2.2rem $logo-font-fam;
+}
+#main-search {
+    width: 100%;
+    height: 4.3rem;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 5px;
+    padding-left: 1.5rem;
+    background: $colour-bg-grey-light;
+    margin-bottom: 1.6rem;
+}
+#filters {
+    display: flex;
+    gap: 1.25rem;
+}
+.button {
+    width: 10.6rem;
+    height: 4.3rem;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    &--blue {
+        background: $colour-filter-blue;
+    }
+    &--green {
+        background: $colour-filter-green;
+    }
+    &--red {
+        background: $colour-filter-red;
+    }
+}
+#search-results {
+    margin-block: 1.56rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    column-gap: 5%;
+    row-gap: 3rem;
+}
+.recipe-card {
+    width: 30%;
+    max-width: 95%;
+    margin: auto;
+    border-radius: 5px;
+    &__picture {
+        height: 178px;
+        background: $colour-bg-grey-dark;
+    }
+    &__text-section {
+        padding: 1.25rem;
+        background: $colour-bg-grey-light;
+    }
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        & h2 {
+            margin:0;
+            font-size: 1.12rem;
+        }
+        & span {
+            font-size: 1.12rem;
+        }
+    }
+    &__details {
+        display: flex;
+    }
+    &__ingredients {
+        font-size: 0.75rem;
+        list-style-type: none;
+        padding: 0;
+        flex: 1;
+    }
+    &__description {
+        font-size: 0.75rem;
+        flex: 1;
+    }
+}
