@@ -32,7 +32,7 @@ body {
     box-sizing: border-box;
     font-family: $body-font-fam;
     margin: auto;
-    max-width: 1400px;
+    max-width: min(1400px, 95%);
 }
 *, *::before, *::after {
     box-sizing: inherit;
@@ -89,9 +89,7 @@ header {
     row-gap: 3rem;
 }
 .recipe-card {
-    width: 30%;
-    max-width: 95%;
-    margin: auto;
+    width: 380px;
     border-radius: 5px;
     &__picture {
         height: 178px;
@@ -120,9 +118,16 @@ header {
         list-style-type: none;
         padding: 0;
         flex: 1;
+        &__name {
+            font-weight: $bold;
+        }
     }
     &__description {
         font-size: 0.75rem;
         flex: 1;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 7;
+        -webkit-box-orient: vertical;
     }
 }

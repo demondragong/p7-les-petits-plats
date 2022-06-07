@@ -2,23 +2,27 @@ body {
   box-sizing: border-box;
   font-family: "Lato", sans-serif;
   margin: auto;
-  max-width: 1400px; }
+  max-width: min(1400px, 95%);
+}
 
 *, *::before, *::after {
-  box-sizing: inherit; }
+  box-sizing: inherit;
+}
 
 header {
   margin-top: 3rem;
   margin-bottom: 1rem;
   display: flex;
   flex-direction: column;
-  align-items: center; }
+  align-items: center;
+}
 
 .logo {
   color: #D04F4F;
   margin: 0;
   text-align: center;
-  font: 700 2.2rem "DM Sans", sans-serif; }
+  font: 700 2.2rem "DM Sans", sans-serif;
+}
 
 #main-search {
   width: 100%;
@@ -28,24 +32,30 @@ header {
   border-radius: 5px;
   padding-left: 1.5rem;
   background: #E7E7E7;
-  margin-bottom: 1.6rem; }
+  margin-bottom: 1.6rem;
+}
 
 #filters {
   display: flex;
-  gap: 1.25rem; }
+  gap: 1.25rem;
+}
 
 .button {
   width: 10.6rem;
   height: 4.3rem;
   border: none;
   border-radius: 5px;
-  color: white; }
-  .button--blue {
-    background: #3282F7; }
-  .button--green {
-    background: #68D9A4; }
-  .button--red {
-    background: #ED6454; }
+  color: white;
+}
+.button--blue {
+  background: #3282F7;
+}
+.button--green {
+  background: #68D9A4;
+}
+.button--red {
+  background: #ED6454;
+}
 
 #search-results {
   margin-block: 1.56rem;
@@ -53,34 +63,51 @@ header {
   flex-wrap: wrap;
   justify-content: space-between;
   column-gap: 5%;
-  row-gap: 3rem; }
+  row-gap: 3rem;
+}
 
 .recipe-card {
-  width: 30%;
-  max-width: 95%;
-  margin: auto;
-  border-radius: 5px; }
-  .recipe-card__picture {
-    height: 178px;
-    background: #C7BEBE; }
-  .recipe-card__text-section {
-    padding: 1.25rem;
-    background: #E7E7E7; }
-  .recipe-card__header {
-    display: flex;
-    justify-content: space-between; }
-    .recipe-card__header h2 {
-      margin: 0;
-      font-size: 1.12rem; }
-    .recipe-card__header span {
-      font-size: 1.12rem; }
-  .recipe-card__details {
-    display: flex; }
-  .recipe-card__ingredients {
-    font-size: 0.75rem;
-    list-style-type: none;
-    padding: 0;
-    flex: 1; }
-  .recipe-card__description {
-    font-size: 0.75rem;
-    flex: 1; }
+  width: 380px;
+  border-radius: 5px;
+}
+.recipe-card__picture {
+  height: 178px;
+  background: #C7BEBE;
+}
+.recipe-card__text-section {
+  padding: 1.25rem;
+  background: #E7E7E7;
+}
+.recipe-card__header {
+  display: flex;
+  justify-content: space-between;
+}
+.recipe-card__header h2 {
+  margin: 0;
+  font-size: 1.12rem;
+}
+.recipe-card__header span {
+  font-size: 1.12rem;
+}
+.recipe-card__details {
+  display: flex;
+}
+.recipe-card__ingredients {
+  font-size: 0.75rem;
+  list-style-type: none;
+  padding: 0;
+  flex: 1;
+}
+.recipe-card__ingredients__name {
+  font-weight: 700;
+}
+.recipe-card__description {
+  font-size: 0.75rem;
+  flex: 1;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 7;
+  -webkit-box-orient: vertical;
+}
+
+/*# sourceMappingURL=style.css.map */
