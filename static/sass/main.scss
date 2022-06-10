@@ -1,5 +1,4 @@
 // || utils
-
 $colour-logo: #D04F4F;
 $colour-filter-blue: #3282F7;
 $colour-filter-green: #68D9A4;
@@ -24,10 +23,14 @@ $bold: 700;
     @media (min-width: 1200px) { @content; }
 }
 
+
+// class to hide elements, use with JS toggle
+.hidden {
+    display: none;
+}
+
+
 // generic styles
-
-// base.html style
-
 body {
     box-sizing: border-box;
     font-family: $body-font-fam;
@@ -63,23 +66,42 @@ header {
 #filters {
     display: flex;
     gap: 1.25rem;
+    height: 7rem;
+}
+.filter-block {
+    border: none;
+    border-radius: 5px;
+    color: white;
+    z-index: 2;
+    &--ingredient {
+        background: $colour-filter-blue;
+    }
+    &--appliance {
+        background: $colour-filter-green;
+    }
+    &--utensil {
+        background: $colour-filter-red;
+    }
+}
+.tag {
+    font-size: 0.9rem;
+    padding: 1rem;
 }
 .button {
     width: 10.6rem;
     height: 4.3rem;
-    border: none;
-    border-radius: 5px;
-    color: white;
-    &--blue {
-        background: $colour-filter-blue;
-    }
-    &--green {
-        background: $colour-filter-green;
-    }
-    &--red {
-        background: $colour-filter-red;
-    }
 }
+.filter-input {
+    height: 4.3rem;
+    padding-inline: 1rem;
+}
+.filter-list {
+    list-style-type: none;
+    padding: 1rem;
+    background: inherit;
+}
+
+
 #search-results {
     margin-block: 1.56rem;
     display: flex;

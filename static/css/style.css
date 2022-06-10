@@ -1,3 +1,7 @@
+.hidden {
+  display: none;
+}
+
 body {
   box-sizing: border-box;
   font-family: "Lato", sans-serif;
@@ -38,23 +42,44 @@ header {
 #filters {
   display: flex;
   gap: 1.25rem;
+  height: 7rem;
+}
+
+.filter-block {
+  border: none;
+  border-radius: 5px;
+  color: white;
+  z-index: 2;
+}
+.filter-block--ingredient {
+  background: #3282F7;
+}
+.filter-block--appliance {
+  background: #68D9A4;
+}
+.filter-block--utensil {
+  background: #ED6454;
+}
+
+.tag {
+  font-size: 0.9rem;
+  padding: 1rem;
 }
 
 .button {
   width: 10.6rem;
   height: 4.3rem;
-  border: none;
-  border-radius: 5px;
-  color: white;
 }
-.button--blue {
-  background: #3282F7;
+
+.filter-input {
+  height: 4.3rem;
+  padding-inline: 1rem;
 }
-.button--green {
-  background: #68D9A4;
-}
-.button--red {
-  background: #ED6454;
+
+.filter-list {
+  list-style-type: none;
+  padding: 1rem;
+  background: inherit;
 }
 
 #search-results {
