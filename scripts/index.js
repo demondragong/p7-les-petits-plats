@@ -1,6 +1,45 @@
+// 
+// Variables
+// 
+
+let selectedTags = [];      //initially empty 
+let recipesShownIDs = recipes.map(recipe => recipe.id);   //initially contains every recipe's ID
+
+
+// DOM elements
+const mainSearch = document.getElementById("main-search");
+const tagsSection = document.getElementById("tags");
+const filtersSection = document.getElementById("filters");
+const recipesSection = document.getElementById("search-results");
+
+const allIngredients = [];
+recipes.forEach((recipe) => {
+    recipe.ingredients.forEach((item) => {
+        // if the ingredient isn't already listed in allIngredients then add it to the list (avoids duplicates)
+        if(!allIngredients.some(e => e.toLowerCase() === item.ingredient.toLowerCase())) {
+            allIngredients.push(item.ingredient.charAt(0).toUpperCase() + item.ingredient.slice(1))
+        }
+    })
+})
+
+const allAppliances = [...new Set(recipes.map(recipe => recipe.appliance))];
+
+const allUtensils = [];
+recipes.forEach((recipe) => {
+    recipe.utensils.forEach((utensil) => {
+        if(!allUtensils.some(e => e.toLowerCase() === utensil.toLowerCase())) {
+            allUtensils.push(utensil.charAt(0).toUpperCase() + utensil.slice(1))
+        }
+    })
+})
+
+
+//
+// Functions and methods
+// 
+
 // build a recipe card DOM
 function createRecipeCard(recipe) {
-
     const { id, name, ingredients, time, description } = recipe;
 
     // recipe picture
@@ -65,77 +104,7 @@ function createRecipeCard(recipe) {
     return recipeCard   
 }
 
-
-// update dropdowns with relevant items, i.e. from the recipes shown on the page
-// function updateDropdownItems(dropdownId) {
-//     const shownRecipesIds;
-//     switch (dropdownId) {
-//         case "ingredients":
-
-//             break;
-//         case "appliance":
-            
-//             break;
-//         case "utensils":
-            
-//             break;    
-//         default:
-//             break;
-//     }
-// }
-
-
-// function showListbox(dropdownId) {
-//     const searchList = getElementById("ingredients_searchlist")
-//     searchList.classList.toggle("hidden");
-//     sortButton.classList.toggle("hidden");
-//     sortButton.setAttribute("aria-expanded", "true");
-// }
-  
-// function hideListbox(dropdownId) {
-//     searchableList.classList.toggle("hidden");
-//     sortButton.classList.toggle("hidden");
-//     sortButton.removeAttribute("aria-expanded");
-// }
-
-
-let selectedTags = [];
-const recipesSection = document.getElementById("search-results");
-
-recipes.forEach((recipe) => {
-    const recipeCard = createRecipeCard(recipe);
-    recipesSection.appendChild(recipeCard);
-})
-
-const allRecipesIds = recipes.map(recipe => recipe.id)
-
-// list of all possible ingredients
-const allIngredients = []
-recipes.forEach((recipe) => {
-    recipe.ingredients.forEach((item) => {
-        if(!allIngredients.some(e => e.toLowerCase() === item.ingredient.toLowerCase())) {
-            allIngredients.push(item.ingredient.charAt(0).toUpperCase() + item.ingredient.slice(1))
-        }
-    })
-})
-fillSearchList("ingredient-list", allIngredients.sort());
-
-// list of all possible appliances
-const allAppliances = [...new Set(recipes.map(recipe => recipe.appliance))];
-fillSearchList("appliance-list", allAppliances.sort());
-
-
-// list of all possible utensils
-const allUtensils = []
-recipes.forEach((recipe) => {
-    recipe.utensils.forEach((utensil) => {
-        if(!allUtensils.some(e => e.toLowerCase() === utensil.toLowerCase())) {
-            allUtensils.push(utensil.charAt(0).toUpperCase() + utensil.slice(1))
-        }
-    })
-})
-fillSearchList("utensil-list", allUtensils.sort());
-
+// fill given DOM list with a set of options
 function fillSearchList(searchListID, listOfOptions) {
     const listToFill = document.getElementById(searchListID)
     listOfOptions.forEach((option) => {
@@ -148,50 +117,7 @@ function fillSearchList(searchListID, listOfOptions) {
 }
 
 
-// helper functions
-/* 
-
-- toggle between button and filter list: expand filter list / collapse filter list
-- filterIngredientList, filterUtensilsList, filterAppliancesList based on recipes displayed
-- filterIngredientList, filterUtensilsList, filterAppliancesList based on text input in filter search
-- showCard / hideCard
-- addTag / removeTag
-
-- filter recipes with search string
-- filter recipes with ingredient/appliance/utensil (remove recipes that do not have the ingredient/appliance/utensil)
-
-*/
-
-
-// event listeners
-/* 
-events to listen to:
-- user text input in main search bar
-    - filter recipes
-    - filter option lists
-- user click on filter button
-    - hide button
-    - show search list
-- user click away from expanded search list
-    - hide search list
-    - show matching button
-- user text input in filter search bar
-    - filter items below / hide items that do not contain the searched string
-- user click on filter item
-    - remove item from list
-    - create and display tag
-    - filter recipes
-    - filter option lists
-- user click on tag/tag X
-    - delete tag element
-    - update recipes
-    - update option lists
-*/
-
-const tagsSection = document.getElementById('tags');
-const filtersSection = document.getElementById("filters");
-
-
+// create a tag element
 function createTag(category, name) {
     const tag = document.createElement('button');
     tag.textContent = name;
@@ -199,11 +125,11 @@ function createTag(category, name) {
     tagsSection.appendChild(tag);
 }
 
+// filter items in a list to only keep those that contain a searchstring
 function filterSearchItems(listId, searchString) {
     const ul = document.getElementById(listId);
-    const li = ul.getElementsByTagName('li');
-  
-    // Loop through all list items, and hide those who don't match the search query
+    const li = ul.getElementsByTagName('li');  
+    // Loop through all list items, and hide those that don't match the search query
     for (i = 0; i < li.length; i++) {
       if (li[i].textContent.toLowerCase().indexOf(searchString.toLowerCase()) > -1) {
         li[i].style.display = "";
@@ -211,17 +137,58 @@ function filterSearchItems(listId, searchString) {
         li[i].style.display = "none";
       }
     }
-  }
+}
+
+// return list of ID of recipes that contain a given ingredient
+function getRecipesWithIngredient(ingredient) {
+    return recipes.filter(recipe => recipe.ingredients.some(e => e.ingredient.toLowerCase() === ingredient.toLowerCase())).map(recipe => recipe.id);
+}
+
+// return list of ID of recipes that use a given appliance
+function getRecipesWithAppliance(appliance) {
+    return recipes.filter(recipe => recipe.appliance.toLowerCase() === appliance.toLowerCase()).map(recipe => recipe.id);
+}
+
+// return list of ID of recipes that use a given utensil
+function getRecipesWithUtensil(utensil) {
+    return recipes.filter(recipe => recipe.utensils.some(e => e.toLowerCase() === utensil.toLowerCase())).map(recipe => recipe.id);
+}
+
+
+
+// 
+// Inits & Event Listeners
+// 
+
+
+// INIT: populate page with recipe cards and fill dropdown lists with possible options
+
+recipes.forEach((recipe) => {
+    const recipeCard = createRecipeCard(recipe);
+    recipesSection.appendChild(recipeCard);
+})
+
+fillSearchList("ingredient-list", allIngredients.sort());
+fillSearchList("appliance-list", allAppliances.sort());
+fillSearchList("utensil-list", allUtensils.sort());
 
 
 
 
+
+
+
+
+// EVENT LISTENERS
+
+// handle text search in the ingredients, appliances and utensils lists
 filtersSection.addEventListener('input',(event) => {    
     const listId = event.target.id.split("-")[0]+"-list";
     const searchString = event.target.value;
     filterSearchItems(listId, searchString)
 })
 
+// handle click events in the filter section
 filtersSection.addEventListener('click',(event) => {    
     let target = event.target;
     if(target.tagName == 'BUTTON') {
@@ -230,12 +197,18 @@ filtersSection.addEventListener('click',(event) => {
         target.nextElementSibling.classList.toggle("hidden");
     }
     else if(target.tagName == 'LI') {
-        console.log(target);
         createTag(target.dataset.category, target.textContent)
         selectedTags.push(target.textContent);
+        // close list and show button
+        const parentSearchList = target.parentElement.parentElement;
+        parentSearchList.classList.toggle("hidden");
+        parentSearchList.previousElementSibling.classList.toggle("hidden");
+        // empty search field
+        // remove selected field from options
     }
 })
 
+// handle click events in the tag section - namely removing a tag when the user clicks on it
 tagsSection.addEventListener('click', (event) => {
     let target = event.target;
     if(target.tagName == 'BUTTON') {

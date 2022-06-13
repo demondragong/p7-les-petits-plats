@@ -39,6 +39,12 @@ header {
   margin-bottom: 1.6rem;
 }
 
+#tags {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
 #filters {
   display: flex;
   gap: 1.25rem;
