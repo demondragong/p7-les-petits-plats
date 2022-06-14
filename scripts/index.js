@@ -2,17 +2,13 @@
 // Variables
 // 
 
-let selectedIngredientTags = [];      //initially empty 
-let selectedApplianceTags = [];      //initially empty 
-let selectedUtensilTags = [];      //initially empty 
-let recipesShownIDs = recipes.map(recipe => recipe.id);   //initially contains every recipe's ID
-
-
 // DOM elements
 const mainSearch = document.getElementById("main-search");
 const tagsSection = document.getElementById("tags");
 const filtersSection = document.getElementById("filters");
 const recipesSection = document.getElementById("search-results");
+
+let recipesShownIDs = recipes.map(recipe => recipe.id);   //initially contains every recipe's ID
 
 const allIngredients = [];
 recipes.forEach((recipe) => {
@@ -142,19 +138,42 @@ function filterSearchItems(listId, searchString) {
     }
 }
 
+function hideRecipesWithoutTag(tagCategory, tagName) {
+    const recipesShown = recipes.filter(recipe => recipesShownIDs.includes(recipe.id));
+    let recipesToHide = [];
+    switch (tagCategory) {
+        case "ingredient":
+            recipesToHide = recipesShownIDs.filter(id => !getRecipesWithIngredient(recipesShown, tagName).includes(id));
+            break;
+        case "appliance":
+            recipesToHide = recipesShownIDs.filter(id => !getRecipesWithAppliance(recipesShown, tagName).includes(id));
+            break;
+        case "utensil":
+            recipesToHide = recipesShownIDs.filter(id => !getRecipesWithUtensil(recipesShown, tagName).includes(id));
+            break;    
+        default:
+            break;
+    }
+    recipesToHide.forEach(recipeID => {
+        document.getElementById(recipeID).classList.add("hidden");
+    });
+    // update list of recipes shown
+    recipesShownIDs = recipesShownIDs.filter(id => !recipesToHide.includes(id));
+}
+
 // return list of ID of recipes that contain a given ingredient
-function getRecipesWithIngredient(ingredient) {
-    return recipes.filter(recipe => recipe.ingredients.some(e => e.ingredient.toLowerCase() === ingredient.toLowerCase())).map(recipe => recipe.id);
+function getRecipesWithIngredient(listOfRecipes, ingredient) {
+    return listOfRecipes.filter(recipe => recipe.ingredients.some(e => e.ingredient.toLowerCase() === ingredient.toLowerCase())).map(recipe => recipe.id);
 }
 
 // return list of ID of recipes that use a given appliance
-function getRecipesWithAppliance(appliance) {
-    return recipes.filter(recipe => recipe.appliance.toLowerCase() === appliance.toLowerCase()).map(recipe => recipe.id);
+function getRecipesWithAppliance(listOfRecipes, appliance) {
+    return listOfRecipes.filter(recipe => recipe.appliance.toLowerCase() === appliance.toLowerCase()).map(recipe => recipe.id);
 }
 
 // return list of ID of recipes that use a given utensil
-function getRecipesWithUtensil(utensil) {
-    return recipes.filter(recipe => recipe.utensils.some(e => e.toLowerCase() === utensil.toLowerCase())).map(recipe => recipe.id);
+function getRecipesWithUtensil(listOfRecipes, utensil) {
+    return listOfRecipes.filter(recipe => recipe.utensils.some(e => e.toLowerCase() === utensil.toLowerCase())).map(recipe => recipe.id);
 }
 
 
@@ -223,20 +242,6 @@ filtersSection.addEventListener('click',(event) => {
     }
     else if(target.tagName == 'LI') {
         createTag(target.dataset.category, target.textContent)
-        
-        switch (target.dataset.category) {
-            case ingredient:
-                selectedIngredientTags.push(target.textContent);
-                break;
-            case appliance:
-                selectedApplianceTags.push(target.textContent);
-                break;
-            case utensil:
-                selectedUtensilTags.push(target.textContent);
-                break;
-            default:
-                break;
-        }
         // close list and show button
         const parentSearchList = target.parentElement.parentElement;
         parentSearchList.classList.toggle("hidden");
@@ -244,7 +249,8 @@ filtersSection.addEventListener('click',(event) => {
         // empty search field
         // remove selected field from options
         // filter recipes shown
-        // filter 
+        hideRecipesWithoutTag(target.dataset.category, target.textContent);
+        // filter option lists
     }
 })
 
@@ -253,6 +259,6 @@ tagsSection.addEventListener('click', (event) => {
     let target = event.target;
     if(target.tagName == 'BUTTON') {
         target.remove();
-        selectedTags = selectedTags.filter(e => e !== target.textContent);
+        // to define
     }
 })
