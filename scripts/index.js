@@ -2,7 +2,9 @@
 // Variables
 // 
 
-let selectedTags = [];      //initially empty 
+let selectedIngredientTags = [];      //initially empty 
+let selectedApplianceTags = [];      //initially empty 
+let selectedUtensilTags = [];      //initially empty 
 let recipesShownIDs = recipes.map(recipe => recipe.id);   //initially contains every recipe's ID
 
 
@@ -121,6 +123,7 @@ function fillSearchList(searchListID, listOfOptions) {
 function createTag(category, name) {
     const tag = document.createElement('button');
     tag.textContent = name;
+    tag.dataset.category = category;
     tag.classList = `tag filter-block filter-block--${category}`;
     tagsSection.appendChild(tag);
 }
@@ -181,30 +184,67 @@ fillSearchList("utensil-list", allUtensils.sort());
 
 // EVENT LISTENERS
 
+// handle text search in main search bar
+mainSearch.addEventListener('input', () => {
+    if (mainSearch.value.length >= 3) {
+        // filter recipes shown
+        // filter list of options
+    }
+})
+
 // handle text search in the ingredients, appliances and utensils lists
 filtersSection.addEventListener('input',(event) => {    
     const listId = event.target.id.split("-")[0]+"-list";
     const searchString = event.target.value;
-    filterSearchItems(listId, searchString)
+    filterSearchItems(listId, searchString);
 })
 
 // handle click events in the filter section
 filtersSection.addEventListener('click',(event) => {    
+    event.stopPropagation();
     let target = event.target;
     if(target.tagName == 'BUTTON') {
         event.preventDefault();
         target.classList.toggle("hidden");
         target.nextElementSibling.classList.toggle("hidden");
+        target.nextElementSibling.firstElementChild.focus();
+
+        // close list and show button when the user clicks outside of the filters section
+        window.addEventListener('click', function(e){
+            if (!document.getElementById(target.nextElementSibling.id).contains(e.target)){
+            target.classList.toggle("hidden");
+            target.nextElementSibling.classList.toggle("hidden");
+            // empty search field and reset filter list to show all possible values
+            // target.nextElementSibling.firstElementChild.value = "";
+            // filterSearchItems(target.nextElementSibling.id, searchString);
+          } 
+        }, { once: true })
+
     }
     else if(target.tagName == 'LI') {
         createTag(target.dataset.category, target.textContent)
-        selectedTags.push(target.textContent);
+        
+        switch (target.dataset.category) {
+            case ingredient:
+                selectedIngredientTags.push(target.textContent);
+                break;
+            case appliance:
+                selectedApplianceTags.push(target.textContent);
+                break;
+            case utensil:
+                selectedUtensilTags.push(target.textContent);
+                break;
+            default:
+                break;
+        }
         // close list and show button
         const parentSearchList = target.parentElement.parentElement;
         parentSearchList.classList.toggle("hidden");
         parentSearchList.previousElementSibling.classList.toggle("hidden");
         // empty search field
         // remove selected field from options
+        // filter recipes shown
+        // filter 
     }
 })
 
