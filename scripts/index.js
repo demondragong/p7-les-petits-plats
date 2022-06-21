@@ -6,35 +6,53 @@
 const mainSearch = document.getElementById("main-search");
 const tagsSection = document.getElementById("tags");
 const filtersSection = document.getElementById("filters");
+const filterButtons = document.getElementsByClassName("button");
 const recipesSection = document.getElementById("search-results");
 
 let recipesShownIDs = recipes.map(recipe => recipe.id);   //initially contains every recipe's ID
 
-const allIngredients = [];
-recipes.forEach((recipe) => {
-    recipe.ingredients.forEach((item) => {
-        // if the ingredient isn't already listed in allIngredients then add it to the list (avoids duplicates)
-        if(!allIngredients.some(e => e.toLowerCase() === item.ingredient.toLowerCase())) {
-            allIngredients.push(item.ingredient.charAt(0).toUpperCase() + item.ingredient.slice(1))
-        }
-    })
-})
+const allIngredients = getIngredients(recipes);
+const allAppliances = getAppliances(recipes);
+const allUtensils = getUtensils(recipes);
 
-const allAppliances = [...new Set(recipes.map(recipe => recipe.appliance))];
-
-const allUtensils = [];
-recipes.forEach((recipe) => {
-    recipe.utensils.forEach((utensil) => {
-        if(!allUtensils.some(e => e.toLowerCase() === utensil.toLowerCase())) {
-            allUtensils.push(utensil.charAt(0).toUpperCase() + utensil.slice(1))
-        }
-    })
-})
 
 
 //
 // Functions and methods
 // 
+
+// get ingredients from list of recipes
+function getIngredients(recipeList) {
+    const ingredients = [];
+    recipeList.forEach((recipe) => {
+        recipe.ingredients.forEach((item) => {
+            // if the ingredient isn't already listed in ingredients then add it to the list (avoids duplicates)
+            if(!ingredients.some(e => e.toLowerCase() === item.ingredient.toLowerCase())) {
+                ingredients.push(item.ingredient.charAt(0).toUpperCase() + item.ingredient.slice(1))
+            }
+        })
+    })
+    return ingredients  
+}
+
+// get appliances from list of recipes
+function getAppliances(recipeList) {
+    const appliances = [...new Set(recipeList.map(recipe => recipe.appliance))];
+    return appliances
+}
+
+// get utensils from list of recipes
+function getUtensils(recipeList) {
+    const utensils = [];
+    recipeList.forEach((recipe) => {
+        recipe.utensils.forEach((utensil) => {
+            if(!utensils.some(e => e.toLowerCase() === utensil.toLowerCase())) {
+                utensils.push(utensil.charAt(0).toUpperCase() + utensil.slice(1))
+            }
+        })
+    })
+    return utensils
+}
 
 // build a recipe card DOM
 function createRecipeCard(recipe) {
@@ -104,7 +122,8 @@ function createRecipeCard(recipe) {
 
 // fill given DOM list with a set of options
 function fillSearchList(searchListID, listOfOptions) {
-    const listToFill = document.getElementById(searchListID)
+    const listToFill = document.getElementById(searchListID);
+    listToFill.replaceChildren();
     listOfOptions.forEach((option) => {
         const item = document.createElement("li");
         item.textContent = option;
@@ -113,7 +132,6 @@ function fillSearchList(searchListID, listOfOptions) {
         listToFill.appendChild(item);
 })
 }
-
 
 // create a tag element
 function createTag(category, name) {
@@ -124,10 +142,70 @@ function createTag(category, name) {
     tagsSection.appendChild(tag);
 }
 
+function expandList(button) {
+    button.classList.add("hidden");
+    button.setAttribute('aria-expanded', true);
+    const associatedList = button.nextElementSibling;
+    associatedList.classList.remove("hidden");
+    associatedList.setAttribute("aria-hidden", false);
+    associatedList.firstElementChild.focus();  
+}
+
+function collapseList(button) {
+    button.classList.remove("hidden");
+    button.setAttribute('aria-expanded', false);
+    const associatedList = button.nextElementSibling;
+    associatedList.classList.add("hidden");
+    associatedList.setAttribute("aria-hidden", true);
+    // empty search field and reset filter list to show all possible values
+    button.nextElementSibling.firstElementChild.value = "";
+    filterSearchItemsWithString(button.nextElementSibling.id, "");
+}
+
+function handleListClosure (event) {
+    let expandedList = document.querySelector("div [aria-hidden='false']");
+    let target = event.target;
+    if (expandedList) {
+        if (!expandedList.contains(target)) {
+            collapseList(expandedList.previousElementSibling);
+        } else if (target.tagName == 'LI') {
+            createTag(target.dataset.category, target.textContent)
+            // close list and show button
+            const associatedButton = target.parentElement.parentElement.previousElementSibling;
+            collapseList(associatedButton);
+            hideRecipesWithoutTag(target.dataset.category, target.textContent);
+            updateFiltersOptions();
+        }
+    }
+}
+
+// update list of options in filters based on recipes shown and currently active tags
+function updateFiltersOptions() {
+
+    // get recipes objects of recipes shown on screen
+    const recipesHiddenIDs = Array.from(document.getElementsByClassName("recipe-card hidden")).map(recipe => parseInt(recipe.id));
+    const recipesShown = recipes.filter(recipe => !recipesHiddenIDs.includes(recipe.id));
+    
+    // get the lists of ingredients/utensils/appliances that are currently active as filters(tags)
+    const selectedIngredientsTags = Array.from(document.querySelectorAll(".tag[data-category='ingredient']")).map(tag => tag.textContent);
+    const selectedAppliancesTags = Array.from(document.querySelectorAll(".tag[data-category='appliance']")).map(tag => tag.textContent);
+    const selectedUtensilsTags = Array.from(document.querySelectorAll(".tag[data-category='utensil']")).map(tag => tag.textContent);
+
+    // possible elements belong to the recipes shown but are not already selected as a tag
+    const possibleIngredients = getIngredients(recipesShown).filter((item) => !selectedIngredientsTags.includes(item));
+    const possibleAppliances = getAppliances(recipesShown).filter((item) => !selectedAppliancesTags.includes(item));
+    const possibleUtensils = getUtensils(recipesShown).filter((item) => !selectedUtensilsTags.includes(item));
+
+    fillSearchList("ingredient-list", possibleIngredients.sort());
+    fillSearchList("appliance-list", possibleAppliances.sort());
+    fillSearchList("utensil-list", possibleUtensils.sort());
+
+}
+
 // filter items in a list to only keep those that contain a searchstring
-function filterSearchItems(listId, searchString) {
+function filterSearchItemsWithString(listId, searchString) {
     const ul = document.getElementById(listId);
-    const li = ul.getElementsByTagName('li');  
+    const li = ul.querySelectorAll("li:not([class='hidden'])")  
     // Loop through all list items, and hide those that don't match the search query
     for (i = 0; i < li.length; i++) {
       if (li[i].textContent.toLowerCase().indexOf(searchString.toLowerCase()) > -1) {
@@ -138,6 +216,7 @@ function filterSearchItems(listId, searchString) {
     }
 }
 
+// filter recipes shown
 function hideRecipesWithoutTag(tagCategory, tagName) {
     const recipesShown = recipes.filter(recipe => recipesShownIDs.includes(recipe.id));
     let recipesToHide = [];
@@ -215,44 +294,18 @@ mainSearch.addEventListener('input', () => {
 filtersSection.addEventListener('input',(event) => {    
     const listId = event.target.id.split("-")[0]+"-list";
     const searchString = event.target.value;
-    filterSearchItems(listId, searchString);
+    filterSearchItemsWithString(listId, searchString);
 })
 
-// handle click events in the filter section
-filtersSection.addEventListener('click',(event) => {    
-    event.stopPropagation();
-    let target = event.target;
-    if(target.tagName == 'BUTTON') {
-        event.preventDefault();
-        target.classList.toggle("hidden");
-        target.nextElementSibling.classList.toggle("hidden");
-        target.nextElementSibling.firstElementChild.focus();
+for (const button of filterButtons) {
+    button.addEventListener("click", event => {
+        event.stopPropagation();
+        expandList(event.target);
+    })
+}
 
-        // close list and show button when the user clicks outside of the filters section
-        window.addEventListener('click', function(e){
-            if (!document.getElementById(target.nextElementSibling.id).contains(e.target)){
-            target.classList.toggle("hidden");
-            target.nextElementSibling.classList.toggle("hidden");
-            // empty search field and reset filter list to show all possible values
-            // target.nextElementSibling.firstElementChild.value = "";
-            // filterSearchItems(target.nextElementSibling.id, searchString);
-          } 
-        }, { once: true })
-
-    }
-    else if(target.tagName == 'LI') {
-        createTag(target.dataset.category, target.textContent)
-        // close list and show button
-        const parentSearchList = target.parentElement.parentElement;
-        parentSearchList.classList.toggle("hidden");
-        parentSearchList.previousElementSibling.classList.toggle("hidden");
-        // empty search field
-        // remove selected field from options
-        // filter recipes shown
-        hideRecipesWithoutTag(target.dataset.category, target.textContent);
-        // filter option lists
-    }
-})
+window.addEventListener('click', handleListClosure)
+window.addEventListener('focusin', handleListClosure)
 
 // handle click events in the tag section - namely removing a tag when the user clicks on it
 tagsSection.addEventListener('click', (event) => {
@@ -260,5 +313,7 @@ tagsSection.addEventListener('click', (event) => {
     if(target.tagName == 'BUTTON') {
         target.remove();
         // to define
+        // update recipes shown
+        // update option lists
     }
 })

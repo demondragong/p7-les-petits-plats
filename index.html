@@ -26,40 +26,55 @@
                 </div>
                 <div id="filters">
                     <!-- consider accessibility of these buttons -->
-                    <button id="ingredients_button"
+                    <button id="ingredients-button"
+                            type="button"
                             role="button"
-                            aria-labelledby="sort-area-label"
                             aria-haspopup="listbox"
+                            aria-controls="ingredients-search-list"
                             aria-expanded="false"
                             class="filter-block button filter-block--ingredient"
                             data-category="ingredient">Ingrédients
                     </button>
-                    <div id="ingredients-search-list" class="hidden filter-block filter-block--ingredient" data-category="ingredient">
+                    <div    id="ingredients-search-list"
+                            aria-hidden="true"
+                            aria-labelledby="ingredients-button"
+                            class="hidden filter-block filter-block--ingredient"
+                            data-category="ingredient">
                         <input type="text" id="ingredient-search" class="filter-input filter-block filter-block--ingredient" placeholder="Rechercher un ingrédient">
                         <ul id="ingredient-list" class="filter-list">
                         </ul>
                     </div>
-                    <button id="appliances_button"
+                    <button id="appliances-button"
+                            type="button"
                             role="button"
-                            aria-labelledby="sort-area-label"
                             aria-haspopup="listbox"
+                            aria-controls="appliances-search-list"
                             aria-expanded="false"
                             class="button filter-block filter-block--appliance"
                             data-category="appliance">Appareils
                     </button>
-                    <div id="appliances-search-list" class="hidden filter-block filter-block--appliance" data-category="appliance">
+                    <div    id="appliances-search-list"
+                            aria-hidden="true"
+                            aria-labelledby="appliances-button"
+                            class="hidden filter-block filter-block--appliance"
+                            data-category="appliance">
                         <input type="text" id="appliance-search" class="filter-input filter-block filter-block--appliance" placeholder="Rechercher un appareil">
                         <ul id="appliance-list" class="filter-list"></ul>
                     </div>
-                    <button id="utensils_button"
+                    <button id="utensils-button"
+                            type="button"
                             role="button"
-                            aria-labelledby="sort-area-label"
                             aria-haspopup="listbox"
+                            aria-controls="utensils-search-list"
                             aria-expanded="false"
                             class="button filter-block filter-block--utensil"
                             data-category="utensil">Ustensiles
                     </button>
-                    <div id="utensils-search-list" class="hidden filter-block filter-block--utensil" data-category="utensil">
+                    <div    id="utensils-search-list"
+                            aria-hidden="true"
+                            aria-labelledby="utensils-button"
+                            class="hidden filter-block filter-block--utensil"
+                            data-category="utensil">
                         <input type="text" id="utensil-search" class="filter-input filter-block filter-block--utensil" placeholder="Rechercher un ustensile">
                         <ul id="utensil-list" class="filter-list"></ul>
                     </div>
