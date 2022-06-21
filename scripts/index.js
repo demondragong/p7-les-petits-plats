@@ -210,10 +210,16 @@ function filterSearchItemsWithString(listId, searchString) {
     }
 }
 
-// hide cards of recipes that do not contain the filter tag in their ingredient or appliance or utensil
-function hideRecipesWithoutTag(tagCategory, tagName) {
+
+function getShownRecipesObjects() {
     const recipesHiddenIDs = Array.from(document.getElementsByClassName("recipe-card hidden")).map(recipe => parseInt(recipe.id));
     const recipesShown = recipes.filter(recipe => !recipesHiddenIDs.includes(recipe.id));
+    return recipesShown
+}
+
+// hide cards of recipes that do not contain the filter tag in their ingredient or appliance or utensil
+function hideRecipesWithoutTag(tagCategory, tagName) {
+    const recipesShown = getShownRecipesObjects();
     const recipesShownIDs = recipesShown.map(recipe => parseInt(recipe.id));
 
     let recipesToHide = [];
@@ -230,14 +236,41 @@ function hideRecipesWithoutTag(tagCategory, tagName) {
         default:
             break;
     }
-    recipesToHide.forEach(recipeID => {
-        document.getElementById(recipeID).classList.add("hidden");
-    });
+    hideElements(recipesToHide);
+}
+
+// get a lowercase string with all ingredients in a given recipe object
+function getRecipeIngredients(recipeObject) {
+    let recipeIngredients = "";
+    for (const item of recipeObject.ingredients) {
+        recipeIngredients += item.ingredient.toLowerCase();
+    }
+    return recipeIngredients
 }
 
 // hide cards of recipes that do not contain the search string in their title or ingredients or description
 function hideRecipesNotMatchingString(searchString) {
-    console.log(searchString);
+    const recipesShownIDs = getShownRecipesObjects().map(recipe => parseInt(recipe.id));
+    const searchStringLower = searchString.toLowerCase();
+    let recipesToHide = [];
+
+    recipesShownIDs.forEach(recipeID => {
+        const recipeObject = recipes.filter(recipe => recipe.id === recipeID)[0];
+        // if search string is not found in recipe name or description or ingredients then hide it
+        if (!(recipeObject.name.toLowerCase().includes(searchStringLower)
+            ||recipeObject.description.toLowerCase().includes(searchStringLower)
+            || getRecipeIngredients(recipeObject).includes(searchStringLower))) {
+            recipesToHide.push(recipeID);
+        }
+    });
+    hideElements(recipesToHide);
+}
+
+// hide DOM elements given a list of IDs
+function hideElements(arrayOfIDs) {
+    arrayOfIDs.forEach(elementID => {
+        document.getElementById(elementID).classList.add("hidden");
+    });
 }
 
 // unhide all recipes
@@ -263,6 +296,20 @@ function getRecipesWithUtensil(listOfRecipes, utensil) {
     return listOfRecipes.filter(recipe => recipe.utensils.some(e => e.toLowerCase() === utensil.toLowerCase())).map(recipe => recipe.id);
 }
 
+// refresh recipes cards results and dropdown list options based on tags and search string
+function refreshResults() {
+    unhideAllRecipes();
+    // hide recipes not matching tag filters
+    for (const tag of activeTags) {
+        hideRecipesWithoutTag(tag.dataset.category, tag.textContent)
+    }
+    // hide recipes not matching search string
+    if (mainSearch.value.length >= 3) {
+        hideRecipesNotMatchingString(mainSearch.value);
+    }
+    updateFiltersOptions();
+}
+
 
 
 // 
@@ -286,18 +333,7 @@ fillSearchList("utensil-list", getUtensils(recipes).sort());
 // EVENT LISTENERS
 
 // handle text search in main search bar
-mainSearch.addEventListener('input', () => {
-    if (mainSearch.value.length >= 3) {
-        unhideAllRecipes();
-        // hide recipes not matching tag filters
-        for (const tag of activeTags) {
-            hideRecipesWithoutTag(tag.dataset.category, tag.textContent)
-        }
-        // hide recipes not matching search string
-        hideRecipesNotMatchingString(mainSearch.value);
-        updateFiltersOptions();
-    }
-})
+mainSearch.addEventListener('input', refreshResults);
 
 // handle text search in the ingredients, appliances and utensils lists
 filtersSection.addEventListener('input',(event) => {    
@@ -323,13 +359,6 @@ tagsSection.addEventListener('click', (event) => {
     let target = event.target;
     if(target.tagName == 'BUTTON') {
         target.remove();
-        unhideAllRecipes();
-        // hide recipes not matching tag filters
-        for (const tag of activeTags) {
-            hideRecipesWithoutTag(tag.dataset.category, tag.textContent)
-        }
-        // hide recipes not matching search string
-        hideRecipesNotMatchingString(mainSearch.value);
-        updateFiltersOptions();
+        refreshResults();
     }
 })
