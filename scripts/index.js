@@ -6,14 +6,9 @@
 const mainSearch = document.getElementById("main-search");
 const tagsSection = document.getElementById("tags");
 const filtersSection = document.getElementById("filters");
+const activeTags = document.getElementsByClassName("tag");
 const filterButtons = document.getElementsByClassName("button");
 const recipesSection = document.getElementById("search-results");
-
-let recipesShownIDs = recipes.map(recipe => recipe.id);   //initially contains every recipe's ID
-
-const allIngredients = getIngredients(recipes);
-const allAppliances = getAppliances(recipes);
-const allUtensils = getUtensils(recipes);
 
 
 
@@ -162,7 +157,7 @@ function collapseList(button) {
     filterSearchItemsWithString(button.nextElementSibling.id, "");
 }
 
-function handleListClosure (event) {
+function handleListClosure(event) {
     let expandedList = document.querySelector("div [aria-hidden='false']");
     let target = event.target;
     if (expandedList) {
@@ -181,7 +176,6 @@ function handleListClosure (event) {
 
 // update list of options in filters based on recipes shown and currently active tags
 function updateFiltersOptions() {
-
     // get recipes objects of recipes shown on screen
     const recipesHiddenIDs = Array.from(document.getElementsByClassName("recipe-card hidden")).map(recipe => parseInt(recipe.id));
     const recipesShown = recipes.filter(recipe => !recipesHiddenIDs.includes(recipe.id));
@@ -216,9 +210,12 @@ function filterSearchItemsWithString(listId, searchString) {
     }
 }
 
-// filter recipes shown
+// hide cards of recipes that do not contain the filter tag in their ingredient or appliance or utensil
 function hideRecipesWithoutTag(tagCategory, tagName) {
-    const recipesShown = recipes.filter(recipe => recipesShownIDs.includes(recipe.id));
+    const recipesHiddenIDs = Array.from(document.getElementsByClassName("recipe-card hidden")).map(recipe => parseInt(recipe.id));
+    const recipesShown = recipes.filter(recipe => !recipesHiddenIDs.includes(recipe.id));
+    const recipesShownIDs = recipesShown.map(recipe => parseInt(recipe.id));
+
     let recipesToHide = [];
     switch (tagCategory) {
         case "ingredient":
@@ -236,8 +233,19 @@ function hideRecipesWithoutTag(tagCategory, tagName) {
     recipesToHide.forEach(recipeID => {
         document.getElementById(recipeID).classList.add("hidden");
     });
-    // update list of recipes shown
-    recipesShownIDs = recipesShownIDs.filter(id => !recipesToHide.includes(id));
+}
+
+// hide cards of recipes that do not contain the search string in their title or ingredients or description
+function hideRecipesNotMatchingString(searchString) {
+    console.log(searchString);
+}
+
+// unhide all recipes
+function unhideAllRecipes() {
+    const recipeCards = document.getElementsByClassName("recipe-card");
+    for (const recipeCard of recipeCards) {
+        recipeCard.classList.remove("hidden");
+    }
 }
 
 // return list of ID of recipes that contain a given ingredient
@@ -261,7 +269,6 @@ function getRecipesWithUtensil(listOfRecipes, utensil) {
 // Inits & Event Listeners
 // 
 
-
 // INIT: populate page with recipe cards and fill dropdown lists with possible options
 
 recipes.forEach((recipe) => {
@@ -269,13 +276,9 @@ recipes.forEach((recipe) => {
     recipesSection.appendChild(recipeCard);
 })
 
-fillSearchList("ingredient-list", allIngredients.sort());
-fillSearchList("appliance-list", allAppliances.sort());
-fillSearchList("utensil-list", allUtensils.sort());
-
-
-
-
+fillSearchList("ingredient-list", getIngredients(recipes).sort());
+fillSearchList("appliance-list", getAppliances(recipes).sort());
+fillSearchList("utensil-list", getUtensils(recipes).sort());
 
 
 
@@ -285,8 +288,14 @@ fillSearchList("utensil-list", allUtensils.sort());
 // handle text search in main search bar
 mainSearch.addEventListener('input', () => {
     if (mainSearch.value.length >= 3) {
-        // filter recipes shown
-        // filter list of options
+        unhideAllRecipes();
+        // hide recipes not matching tag filters
+        for (const tag of activeTags) {
+            hideRecipesWithoutTag(tag.dataset.category, tag.textContent)
+        }
+        // hide recipes not matching search string
+        hideRecipesNotMatchingString(mainSearch.value);
+        updateFiltersOptions();
     }
 })
 
@@ -297,6 +306,7 @@ filtersSection.addEventListener('input',(event) => {
     filterSearchItemsWithString(listId, searchString);
 })
 
+// handle dropdown lists expansion when the user clicks on the associated button
 for (const button of filterButtons) {
     button.addEventListener("click", event => {
         event.stopPropagation();
@@ -304,6 +314,7 @@ for (const button of filterButtons) {
     })
 }
 
+// handle closing/collapsing of any open dropdown list when the user clicks outside of it
 window.addEventListener('click', handleListClosure)
 window.addEventListener('focusin', handleListClosure)
 
@@ -312,8 +323,13 @@ tagsSection.addEventListener('click', (event) => {
     let target = event.target;
     if(target.tagName == 'BUTTON') {
         target.remove();
-        // to define
-        // update recipes shown
-        // update option lists
+        unhideAllRecipes();
+        // hide recipes not matching tag filters
+        for (const tag of activeTags) {
+            hideRecipesWithoutTag(tag.dataset.category, tag.textContent)
+        }
+        // hide recipes not matching search string
+        hideRecipesNotMatchingString(mainSearch.value);
+        updateFiltersOptions();
     }
 })
