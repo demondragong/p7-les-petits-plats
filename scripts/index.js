@@ -210,10 +210,10 @@ function filterSearchItemsWithString(listId, searchString) {
     }
 }
 
-
+// return recipes object from recipes array of recipes shown on the screen
 function getShownRecipesObjects() {
-    const recipesHiddenIDs = Array.from(document.getElementsByClassName("recipe-card hidden")).map(recipe => parseInt(recipe.id));
-    const recipesShown = recipes.filter(recipe => !recipesHiddenIDs.includes(recipe.id));
+    const recipesShownIDs = Array.from(document.querySelectorAll("[class='recipe-card'")).map(recipe => parseInt(recipe.id));
+    const recipesShown = recipes.filter(recipe => recipesShownIDs.includes(recipe.id));
     return recipesShown
 }
 
@@ -236,7 +236,7 @@ function hideRecipesWithoutTag(tagCategory, tagName) {
         default:
             break;
     }
-    hideElements(recipesToHide);
+    recipesToHide.forEach(recipeID => hideElementWithID(recipeID));
 }
 
 // get a lowercase string with all ingredients in a given recipe object
@@ -250,27 +250,22 @@ function getRecipeIngredients(recipeObject) {
 
 // hide cards of recipes that do not contain the search string in their title or ingredients or description
 function hideRecipesNotMatchingString(searchString) {
-    const recipesShownIDs = getShownRecipesObjects().map(recipe => parseInt(recipe.id));
     const searchStringLower = searchString.toLowerCase();
-    let recipesToHide = [];
+    const recipesShown = getShownRecipesObjects();
 
-    recipesShownIDs.forEach(recipeID => {
-        const recipeObject = recipes.filter(recipe => recipe.id === recipeID)[0];
+    recipesShown.forEach(recipe => {
         // if search string is not found in recipe name or description or ingredients then hide it
-        if (!(recipeObject.name.toLowerCase().includes(searchStringLower)
-            ||recipeObject.description.toLowerCase().includes(searchStringLower)
-            || getRecipeIngredients(recipeObject).includes(searchStringLower))) {
-            recipesToHide.push(recipeID);
+        if (!(recipe.name.toLowerCase().includes(searchStringLower)
+            ||recipe.description.toLowerCase().includes(searchStringLower)
+            || getRecipeIngredients(recipe).includes(searchStringLower))) {
+            hideElementWithID(recipe.id);
         }
-    });
-    hideElements(recipesToHide);
+    })
 }
 
-// hide DOM elements given a list of IDs
-function hideElements(arrayOfIDs) {
-    arrayOfIDs.forEach(elementID => {
-        document.getElementById(elementID).classList.add("hidden");
-    });
+// hide DOM element given an ID
+function hideElementWithID(elementID) {
+    document.getElementById(elementID).classList.add("hidden");
 }
 
 // unhide all recipes
