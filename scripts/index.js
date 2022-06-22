@@ -210,10 +210,10 @@ function filterSearchItemsWithString(listId, searchString) {
     }
 }
 
-
+// return recipes object from recipes array of recipes shown on the screen
 function getShownRecipesObjects() {
-    const recipesHiddenIDs = Array.from(document.getElementsByClassName("recipe-card hidden")).map(recipe => parseInt(recipe.id));
-    const recipesShown = recipes.filter(recipe => !recipesHiddenIDs.includes(recipe.id));
+    const recipesShownIDs = Array.from(document.querySelectorAll("[class='recipe-card'")).map(recipe => parseInt(recipe.id));
+    const recipesShown = recipes.filter(recipe => recipesShownIDs.includes(recipe.id));
     return recipesShown
 }
 
