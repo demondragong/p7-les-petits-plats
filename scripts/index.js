@@ -253,6 +253,7 @@ function hideRecipesNotMatchingString(searchString) {
     const searchStringLower = searchString.toLowerCase();
     const recipesShown = getShownRecipesObjects();
 
+    // loop over recipe elements shown (i.e. not already hidden) to assess whether they should be hidden
     recipesShown.forEach(recipe => {
         // if search string is not found in recipe name or description or ingredients then hide it
         if (!(recipe.name.toLowerCase().includes(searchStringLower)
@@ -261,6 +262,19 @@ function hideRecipesNotMatchingString(searchString) {
             hideElementWithID(recipe.id);
         }
     })
+}
+
+// test the performance of the hideRecipesNotMatchingString function with a given number of iterations and search string
+function testSearchPerf(iterations, string) {
+    unhideAllRecipes();
+    let then = new Date;
+    for (let index = 0; index < iterations; index++) {
+        hideRecipesNotMatchingString(string);
+        unhideAllRecipes();        
+    }
+    let now = new Date;
+    let duration = now - then;
+    console.log(duration)
 }
 
 // hide DOM element given an ID
