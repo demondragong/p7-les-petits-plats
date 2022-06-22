@@ -256,9 +256,10 @@ function hideRecipesNotMatchingString(searchString) {
     // loop over recipe elements shown (i.e. not already hidden) to assess whether they should be hidden
     for (const recipeElement of recipesShown) {
         // get the recipe object matching the ID (the next lines are equivalent to an Array.find)
+        let recipeObject;
         for (const recipe of recipes) {
             if (recipe.id == recipeElement.id) {
-                const recipeObject = recipe;
+                recipeObject = recipe;
                 break;        
             }
         }
