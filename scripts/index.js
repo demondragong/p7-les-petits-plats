@@ -249,16 +249,45 @@ function getRecipeIngredients(recipeObject) {
 }
 
 // hide cards of recipes that do not contain the search string in their title or ingredients or description
+// function hideRecipesNotMatchingString(searchString) {
+//     const searchStringLower = searchString.toLowerCase();
+//     const recipesShown = document.querySelectorAll("[class='recipe-card'");
+
+//     // loop over recipe elements shown (i.e. not already hidden) to assess whether they should be hidden
+    
+//     for (const recipeElement of recipesShown) {
+//         // get the recipe object matching the ID (the next lines are equivalent to an Array.find)
+//         let recipeObject;
+//         for (const recipe of recipes) {
+//             if (recipe.id == recipeElement.id) {
+//                 recipeObject = recipe;
+//                 break;        
+//             }
+//         }
+//         // if search string is not found in recipe name or description or ingredients then hide it, otherwise leave it (continue)
+//         if (recipeObject.name.toLowerCase().includes(searchStringLower)) {
+//             continue;
+//         } else if (recipeObject.description.toLowerCase().includes(searchStringLower)) {
+//             continue;
+//         } else if (getRecipeIngredients(recipeObject).includes(searchStringLower)) {
+//             continue;
+//         } else {
+//             hideElementWithID(recipeElement.id);
+//         }    
+//     }
+// }
+
 function hideRecipesNotMatchingString(searchString) {
     const searchStringLower = searchString.toLowerCase();
     const recipesShown = document.querySelectorAll("[class='recipe-card'");
 
     // loop over recipe elements shown (i.e. not already hidden) to assess whether they should be hidden
-    
-    for (const recipeElement of recipesShown) {
+    for (let index = 0; index < recipesShown.length; index++) {
+        const recipeElement = recipesShown[index];
         // get the recipe object matching the ID (the next lines are equivalent to an Array.find)
         let recipeObject;
-        for (const recipe of recipes) {
+        for (let i = 0; i < recipes.length; i++) {
+            const recipe = recipes[i];
             if (recipe.id == recipeElement.id) {
                 recipeObject = recipe;
                 break;        
@@ -273,7 +302,7 @@ function hideRecipesNotMatchingString(searchString) {
             continue;
         } else {
             hideElementWithID(recipeElement.id);
-        }    
+        }  
     }
 }
 
