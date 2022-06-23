@@ -10,8 +10,10 @@ const activeTags = document.getElementsByClassName("tag");
 const filterButtons = document.getElementsByClassName("button");
 const recipesSection = document.getElementById("search-results");
 
+// map recipe units to their acronyms
 const unitMap = new Map(Object.entries({ 
-    "cuillères à soupe": "c.à.s.", 
+    "cuillères à soupe": "c.à.s.",
+    "cuillère à soupe": "c.à.s.", 
     "grammes": "g" 
   }));
 
