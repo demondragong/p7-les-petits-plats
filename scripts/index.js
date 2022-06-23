@@ -316,7 +316,7 @@ function testSearchPerf(iterations, string) {
     }
     let now = new Date;
     let duration = now - then;
-    console.log(duration)
+    console.log(`durée du test : ${duration} ms`)
 }
 
 // hide DOM elements with a given ID
