@@ -254,6 +254,7 @@ function hideRecipesNotMatchingString(searchString) {
     const recipesShown = document.querySelectorAll("[class='recipe-card'");
 
     // loop over recipe elements shown (i.e. not already hidden) to assess whether they should be hidden
+    
     for (const recipeElement of recipesShown) {
         // get the recipe object matching the ID (the next lines are equivalent to an Array.find)
         let recipeObject;
@@ -274,6 +275,19 @@ function hideRecipesNotMatchingString(searchString) {
             hideElementWithID(recipeElement.id);
         }    
     }
+}
+
+// test the performance of the hideRecipesNotMatchingString function with a given number of iterations and search string
+function testSearchPerf(iterations, string) {
+    unhideAllRecipes();
+    let then = new Date;
+    for (let index = 0; index < iterations; index++) {
+        hideRecipesNotMatchingString(string);
+        unhideAllRecipes();        
+    }
+    let now = new Date;
+    let duration = now - then;
+    console.log(duration)
 }
 
 // hide DOM elements with a given ID
