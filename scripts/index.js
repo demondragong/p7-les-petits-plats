@@ -10,6 +10,10 @@ const activeTags = document.getElementsByClassName("tag");
 const filterButtons = document.getElementsByClassName("button");
 const recipesSection = document.getElementById("search-results");
 
+const unitMap = new Map(Object.entries({ 
+    "cuillères à soupe": "c.à.s.", 
+    "grammes": "g" 
+  }));
 
 
 //
@@ -84,8 +88,10 @@ function createRecipeCard(recipe) {
         const ingredientNameSpan = document.createElement( 'span' );
         ingredientNameSpan.classList = "recipe-card__ingredients__name";
         const ingredientQuantitySpan = document.createElement( 'span' );
-        ingredientNameSpan.textContent = ingredient.ingredient + ": ";
-        ingredientQuantitySpan.textContent = ingredient.quantity + " ";
+        ingredientNameSpan.textContent = ingredient.ingredient;
+        let ingredientQuantityString = ingredient.quantity? ` : ${ingredient.quantity} ` : '';
+        let ingredientUnitString = ingredient.unit? (unitMap.has(ingredient.unit)? unitMap.get(ingredient.unit) : ingredient.unit ) : '';
+        ingredientQuantitySpan.textContent =  ingredientQuantityString + " " + ingredientUnitString;
         const ingredientLi = document.createElement( 'li' );
         ingredientLi.append(ingredientNameSpan, ingredientQuantitySpan);
         recipeCardIngredientsList.appendChild(ingredientLi);
@@ -212,7 +218,7 @@ function filterSearchItemsWithString(listId, searchString) {
 
 // return recipes object from recipes array of recipes shown on the screen
 function getShownRecipesObjects() {
-    const recipesShownIDs = Array.from(document.querySelectorAll("[class='recipe-card'")).map(recipe => parseInt(recipe.id));
+    const recipesShownIDs = Array.from(document.querySelectorAll("[class='recipe-card']")).map(recipe => parseInt(recipe.id));
     const recipesShown = recipes.filter(recipe => recipesShownIDs.includes(recipe.id));
     return recipesShown
 }
@@ -315,6 +321,13 @@ function refreshResults() {
     // hide recipes not matching search string
     if (mainSearch.value.length >= 3) {
         hideRecipesNotMatchingString(mainSearch.value);
+    }
+    // if there are no results, show no-result message
+    const noResultMessage = document.getElementById("no-result");
+    if (document.querySelectorAll("[class='recipe-card']").length == 0) {
+        noResultMessage.classList.remove("hidden");
+    } else {
+        noResultMessage.classList.add("hidden");
     }
     updateFiltersOptions();
 }
