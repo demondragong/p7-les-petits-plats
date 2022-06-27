@@ -18,6 +18,7 @@ const unitMap = new Map(Object.entries({
   }));
 
 
+
 //
 // Functions and methods
 // 
@@ -123,7 +124,7 @@ function createRecipeCard(recipe) {
     return recipeCard   
 }
 
-// fill given DOM list with a set of options
+// fill given DOM list with an array of options
 function fillSearchList(searchListID, listOfOptions) {
     const listToFill = document.getElementById(searchListID);
     listToFill.replaceChildren();
@@ -145,6 +146,7 @@ function createTag(category, name) {
     tagsSection.appendChild(tag);
 }
 
+// toggle between button and dropdown list below: hide button and show list
 function expandList(button) {
     button.classList.add("hidden");
     button.setAttribute('aria-expanded', true);
@@ -154,6 +156,7 @@ function expandList(button) {
     associatedList.firstElementChild.focus();  
 }
 
+// toggle between button and dropdown list below: show button and hide list
 function collapseList(button) {
     button.classList.remove("hidden");
     button.setAttribute('aria-expanded', false);
@@ -165,6 +168,7 @@ function collapseList(button) {
     filterSearchItemsWithString(button.nextElementSibling.id, "");
 }
 
+// handle closure of expanded dropdown list : either because of a click outside the list or a click on one of its items
 function handleListClosure(event) {
     let expandedList = document.querySelector("div [aria-hidden='false']");
     let target = event.target;
@@ -337,20 +341,21 @@ function refreshResults() {
 
 
 // 
-// Inits & Event Listeners
+// Init & Event Listeners
 // 
 
-// INIT: populate page with recipe cards and fill dropdown lists with possible options
+// INIT
 
+// populate page with recipe cards
 recipes.forEach((recipe) => {
     const recipeCard = createRecipeCard(recipe);
     recipesSection.appendChild(recipeCard);
 })
 
+// fill dropdown lists with possible options
 fillSearchList("ingredient-list", getIngredients(recipes).sort());
 fillSearchList("appliance-list", getAppliances(recipes).sort());
 fillSearchList("utensil-list", getUtensils(recipes).sort());
-
 
 
 
@@ -366,6 +371,7 @@ filtersSection.addEventListener('input',(event) => {
     filterSearchItemsWithString(listId, searchString);
 })
 
+
 // handle dropdown lists expansion when the user clicks on the associated button
 for (const button of filterButtons) {
     button.addEventListener("click", event => {
@@ -377,6 +383,7 @@ for (const button of filterButtons) {
 // handle closing/collapsing of any open dropdown list when the user clicks outside of it
 window.addEventListener('click', handleListClosure)
 window.addEventListener('focusin', handleListClosure)
+
 
 // handle click events in the tag section - namely removing a tag when the user clicks on it
 tagsSection.addEventListener('click', (event) => {
