@@ -1,6 +1,6 @@
 <a name="readme-top"></a>
 <!-- ABOUT THE PROJECT -->
-# Les petits plats project
+# Les petits plats
 
 Search and results page of an imaginary recipe website.
 - Vanilla javascript
